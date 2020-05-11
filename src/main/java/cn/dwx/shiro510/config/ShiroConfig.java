@@ -1,6 +1,8 @@
 package cn.dwx.shiro510.config;
 
 
+import cn.dwx.shiro510.filter.MyPermFilter;
+import cn.dwx.shiro510.filter.MyRoleFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
@@ -10,47 +12,53 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+import javax.servlet.Filter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
 
-//    @Bean
-//    public RedisManager redisManager() {
-//        RedisManager redisManager = new RedisManager();
-//        redisManager.setHost("localhost");
-//        redisManager.setPort(6379);
-//        redisManager.setExpire(1800);// 配置缓存过期时间
-//        redisManager.setTimeout(2000);
-//        return redisManager;
-//    }
-//    @Bean
-//    public RedisSessionDAO redisSessionDAO(RedisManager redisManager) {
-//        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
-//        redisSessionDAO.setRedisManager(redisManager);
-//        return redisSessionDAO;
-//    }
-//    /**
-//     * shiro session的管理
-//     */
-//    @Bean
-//    public DefaultWebSessionManager redisSessionManager(RedisSessionDAO redisSessionDAO) {
-//        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-//        sessionManager.setSessionDAO(redisSessionDAO);
-//        return sessionManager;
-//    }
-//    @Bean
-//    public RedisCacheManager redisCacheManager(RedisManager redisManager) {
-//        RedisCacheManager redisCacheManager = new RedisCacheManager();
-//        redisCacheManager.setRedisManager(redisManager);
-//        return redisCacheManager;
-//    }
+    @Bean
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost("localhost");
+        redisManager.setPort(6379);
+        redisManager.setExpire(1800);// 配置缓存过期时间
+        redisManager.setTimeout(2000);
+        return redisManager;
+    }
+    @Bean
+    public RedisSessionDAO redisSessionDAO(RedisManager redisManager) {
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager);
+        return redisSessionDAO;
+    }
+    /**
+     * shiro session的管理
+     */
+    @Bean
+    public DefaultWebSessionManager redisSessionManager(RedisSessionDAO redisSessionDAO) {
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setSessionDAO(redisSessionDAO);
+        return sessionManager;
+    }
+    @Bean
+    public RedisCacheManager redisCacheManager(RedisManager redisManager) {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager);
+        return redisCacheManager;
+    }
 
 
     @Bean(name = "shiroFilter")
@@ -66,10 +74,10 @@ public class ShiroConfig {
 
 
         // 自定义拦截器,roles[经理2,vip] perms[查询信息,add]的关系改成或者
-//       Map<String, Filter> map =new HashMap<String, Filter>();
-//        map.put("roles",new MyRoleFilter());
-//        map.put("perms",new MyPermFilter());
-//        shiroFilterFactoryBean.setFilters(map);
+        Map<String, Filter> map = new HashMap<>();
+        map.put("roles", new MyRoleFilter());
+        map.put("perms", new MyPermFilter());
+        shiroFilterFactoryBean.setFilters(map);
 
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // <!-- authc:(必须登录)所有url都必须认证通过才可以访问; anon:所有url都可以匿名访问-->
@@ -90,7 +98,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/admin/**", "roles[经理2,vip]");
         filterChainDefinitionMap.put("/abc/**", "perms[查询信息,add]");
 
-
         filterChainDefinitionMap.put("/user/**", "authc");
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
         filterChainDefinitionMap.put("/*", "anon");
@@ -98,32 +105,43 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**", "anon");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
-
     }
 
 //    @Bean
-//    public DefaultWebSecurityManager  securityManager(DefaultWebSessionManager redisSessionManager,RedisCacheManager redisCacheManager) {
+//    public DefaultWebSecurityManager  securityManager(DefaultWebSessionManager redisSessionManager) {
 //        DefaultWebSecurityManager defaultSecurityManager = new DefaultWebSecurityManager();
 //        //设置realm realm是提供验证数据（比如用户信息，角色权限信息）
 //        defaultSecurityManager.setRealm(customRealm());
 //        defaultSecurityManager.setSessionManager(redisSessionManager);
-//        defaultSecurityManager.setCacheManager(redisCacheManager);
+////        defaultSecurityManager.setCacheManager(redisCacheManager);
 //        // 使用记住我
 //        defaultSecurityManager.setRememberMeManager(rememberMeManager());
 //        return defaultSecurityManager;
 //    }
 
     @Bean
-    public DefaultWebSecurityManager securityManager() {
+    public DefaultWebSecurityManager  securityManager(DefaultWebSessionManager redisSessionManager, RedisCacheManager redisCacheManager) {
         DefaultWebSecurityManager defaultSecurityManager = new DefaultWebSecurityManager();
         //设置realm realm是提供验证数据（比如用户信息，角色权限信息）
         defaultSecurityManager.setRealm(customRealm());
-//        defaultSecurityManager.setSessionManager(redisSessionManager);
-//        defaultSecurityManager.setCacheManager(redisCacheManager);
+        defaultSecurityManager.setSessionManager(redisSessionManager);
+        defaultSecurityManager.setCacheManager(redisCacheManager);
         // 使用记住我
         defaultSecurityManager.setRememberMeManager(rememberMeManager());
         return defaultSecurityManager;
     }
+
+//    @Bean
+//    public DefaultWebSecurityManager securityManager() {
+//        DefaultWebSecurityManager defaultSecurityManager = new DefaultWebSecurityManager();
+//        //设置realm realm是提供验证数据（比如用户信息，角色权限信息）
+//        defaultSecurityManager.setRealm(customRealm());
+////        defaultSecurityManager.setSessionManager(redisSessionManager);
+////        defaultSecurityManager.setCacheManager(redisCacheManager);
+//        // 使用记住我
+//        defaultSecurityManager.setRememberMeManager(rememberMeManager());
+//        return defaultSecurityManager;
+//    }
 
     @Bean
     public MyRealm customRealm() {
@@ -206,6 +224,4 @@ public class ShiroConfig {
         cookieRememberMeManager.setCookie(rememberMeCookie());
         return cookieRememberMeManager;
     }
-
-
 }

@@ -56,16 +56,21 @@ public class MyRealm extends AuthorizingRealm {
     @Override
 //    登陆验证
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        //方法需要传token参数
+        //把token参数 转成usernameandpasswordtoken类型
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
-        String username = usernamePasswordToken.getUsername();
+        String username = usernamePasswordToken.getUsername();  //获得username
+
         Map user = userMapper.getByName(username);
         if (user == null) {
-            throw new UnknownAccountException();
+            throw new UnknownAccountException(); //没有这个账户 抛一个异常
         }
+
         //获得盐值
         String salt = (String) user.get("salt");
         ByteSource bytes = ByteSource.Util.bytes(salt);
 
+        //凭证信息    四个参数: 用户, 密码, 颜值, 当前realm的名称 MyRealm
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.get("password"), bytes, getName());
         return info;
     }

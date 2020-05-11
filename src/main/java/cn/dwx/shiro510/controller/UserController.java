@@ -8,6 +8,8 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,7 @@ import java.util.Map;
 import java.util.Random;
 
 @RestController
-public class UserController {
+public class UserController extends BaseController {
 
     @Resource
     private UserService userService;
@@ -28,9 +30,10 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public Map login(String name, String password) {
+    public Map login(String name, String password, Boolean rememberMe) {
         Subject subject = SecurityUtils.getSubject();  //通过shiro获得当前用户
         UsernamePasswordToken token = new UsernamePasswordToken(name, password); //把用户名和密码做成taken
+        token.setRememberMe(rememberMe);
         try {
             subject.login(token);  //调用subject的登陆方法
         } catch (UnknownAccountException e) {
@@ -66,5 +69,18 @@ public class UserController {
         } else {
             return ReturnUtil.failReturn();
         }
+    }
+
+    @RequiresRoles(value = {"admin", "vip"}, logical = Logical.OR)
+    @GetMapping("/test66")
+    public Map test66(@RequestParam Map map) {
+//        Subject subject = SecurityUtils.getSubject();
+//        Long currentUserId = (Long) SecurityUtils.getSubject().getSession().getAttribute("currentUserId");
+//        System.out.println("currentUserId = " + currentUserId);
+//        HashMap map1 = (HashMap) SecurityUtils.getSubject().getPrincipal();
+//        System.out.println("map1.get(\"name\") = " + map1.get("name"));
+//        return null;
+        System.out.println("test66");
+        return null;
     }
 }
