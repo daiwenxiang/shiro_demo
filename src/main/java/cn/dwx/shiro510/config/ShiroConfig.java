@@ -65,7 +65,6 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
 
 
-
         // 自定义拦截器,roles[经理2,vip] perms[查询信息,add]的关系改成或者
 //       Map<String, Filter> map =new HashMap<String, Filter>();
 //        map.put("roles",new MyRoleFilter());
@@ -115,7 +114,7 @@ public class ShiroConfig {
 //    }
 
     @Bean
-    public DefaultWebSecurityManager  securityManager() {
+    public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager defaultSecurityManager = new DefaultWebSecurityManager();
         //设置realm realm是提供验证数据（比如用户信息，角色权限信息）
         defaultSecurityManager.setRealm(customRealm());
@@ -173,7 +172,7 @@ public class ShiroConfig {
     }
 
     @Bean
-    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(DefaultWebSecurityManager  securityManager) {
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(DefaultWebSecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;

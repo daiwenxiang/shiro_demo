@@ -47,7 +47,6 @@ public class MyRealm extends AuthorizingRealm {
             }
         }
 
-
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.setRoles(roleSet);
         info.setStringPermissions(permissionSet);
@@ -60,7 +59,7 @@ public class MyRealm extends AuthorizingRealm {
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
         String username = usernamePasswordToken.getUsername();
         Map user = userMapper.getByName(username);
-        if (user==null) {
+        if (user == null) {
             throw new UnknownAccountException();
         }
         //获得盐值
