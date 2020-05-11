@@ -22,6 +22,7 @@ public class ReturnUtil {
     public static Map failReturn() {
         Map map = new HashMap();
         map.put("code", "-1");
+        map.put("msg", "失败");
         return map;
     }
 

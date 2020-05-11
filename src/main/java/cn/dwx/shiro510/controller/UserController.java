@@ -51,7 +51,10 @@ public class UserController {
 
         //密码加密    按照shiro的规则进行加密
         //四个参数  凭证管理器 密码 盐值 加密迭代次数
-        SimpleHash md5 = new SimpleHash(credentialsMatcher.getHashAlgorithmName(), password, num + "", credentialsMatcher.getHashIterations());
+        SimpleHash md5 = new SimpleHash(credentialsMatcher.getHashAlgorithmName(),
+                password,
+                num + "",
+                credentialsMatcher.getHashIterations());
 
         //把加密后的密码和盐值存入map
         map.put("salt", num + "");
