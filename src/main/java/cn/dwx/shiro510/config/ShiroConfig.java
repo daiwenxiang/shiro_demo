@@ -59,7 +59,6 @@ public class ShiroConfig {
         return redisCacheManager;
     }
 
-
     @Bean(name = "shiroFilter")
     //配置拦截的规则
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
@@ -70,7 +69,6 @@ public class ShiroConfig {
 
         shiroFilterFactoryBean.setLoginUrl("/unlogin");
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
-
 
         // 自定义拦截器,roles[经理2,vip] perms[查询信息,add]的关系改成或者
         Map<String, Filter> map = new HashMap<>();
@@ -153,7 +151,6 @@ public class ShiroConfig {
         return customRealm;
     }
 
-
     //凭证管理器
     @Bean(name = "credentialsMatcher")
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
@@ -166,7 +163,6 @@ public class ShiroConfig {
         hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
         return hashedCredentialsMatcher;
     }
-
 
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
@@ -194,7 +190,6 @@ public class ShiroConfig {
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
-
 
     @Bean
     public SimpleCookie rememberMeCookie() {
