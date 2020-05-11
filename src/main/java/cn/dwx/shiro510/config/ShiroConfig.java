@@ -1,6 +1,5 @@
 package cn.dwx.shiro510.config;
 
-
 import cn.dwx.shiro510.filter.MyPermFilter;
 import cn.dwx.shiro510.filter.MyRoleFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
