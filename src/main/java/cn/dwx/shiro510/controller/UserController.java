@@ -51,18 +51,12 @@ public class UserController extends BaseController {
         String password = (String) map.get("password");
         Random random = new Random();
         int num = random.nextInt(9000) + 1000;
-
         //密码加密    按照shiro的规则进行加密
         //四个参数  凭证管理器 密码 盐值 加密迭代次数
-        SimpleHash md5 = new SimpleHash(credentialsMatcher.getHashAlgorithmName(),
-                password,
-                num + "",
-                credentialsMatcher.getHashIterations());
-
+        SimpleHash md5 = new SimpleHash(credentialsMatcher.getHashAlgorithmName(), password, num + "", credentialsMatcher.getHashIterations());
         //把加密后的密码和盐值存入map
         map.put("salt", num + "");
         map.put("password", md5.toString());
-
         int reg = userService.reg(map);
         if (reg == 1) {
             return ReturnUtil.successReturn();
@@ -74,12 +68,6 @@ public class UserController extends BaseController {
     @RequiresRoles(value = {"admin", "vip"}, logical = Logical.OR)
     @GetMapping("/test66")
     public Map test66(@RequestParam Map map) {
-//        Subject subject = SecurityUtils.getSubject();
-//        Long currentUserId = (Long) SecurityUtils.getSubject().getSession().getAttribute("currentUserId");
-//        System.out.println("currentUserId = " + currentUserId);
-//        HashMap map1 = (HashMap) SecurityUtils.getSubject().getPrincipal();
-//        System.out.println("map1.get(\"name\") = " + map1.get("name"));
-//        return null;
         System.out.println("test66");
         return null;
     }

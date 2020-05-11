@@ -10,22 +10,16 @@ public class MyRoleFilter extends AuthorizationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
-        //获得当前用户
-        Subject subject = getSubject(request, response);
-        //把参数mappedValue转成数组
-        String[] roles = (String[]) mappedValue;
+        Subject subject = getSubject(request, response); //获得当前用户
+        String[] roles = (String[]) mappedValue; //把参数mappedValue转成数组
         if (roles == null || roles.length == 0) {
             return true;
         }
-
-        //循环判断当前用户是否有权限
-        //把默认的and关系 变成了 或者 的关系
-        for (String role : roles) {
+        for (String role : roles) {  //循环判断用户是否有角色, 当一有角色的时候, 就返回true, 相当于把and变成了or
             if (subject.hasRole(role)) {
                 return true;
             }
         }
-
         return false;
     }
 }

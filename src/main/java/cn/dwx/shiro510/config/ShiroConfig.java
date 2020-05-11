@@ -43,6 +43,7 @@ public class ShiroConfig {
         redisSessionDAO.setRedisManager(redisManager);
         return redisSessionDAO;
     }
+
     /**
      * shiro session的管理
      */
@@ -85,21 +86,17 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/aa", "user");
         filterChainDefinitionMap.put("/logout", "logout");
-        filterChainDefinitionMap.put("/logout", "logout");
         filterChainDefinitionMap.put("/", "user");
         filterChainDefinitionMap.put("/front/**", "anon");
         filterChainDefinitionMap.put("/api/**", "anon");
         filterChainDefinitionMap.put("/my/**", "roles[经理]");
         filterChainDefinitionMap.put("/bb/**", "roles[admin]");
-
         filterChainDefinitionMap.put("/admin/**", "roles[经理2,vip]");
         filterChainDefinitionMap.put("/abc/**", "perms[查询信息,add]");
-
         filterChainDefinitionMap.put("/user/**", "authc");
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
-        filterChainDefinitionMap.put("/*", "anon");
-        //filterChainDefinitionMap.put("/**", "authc");
-        filterChainDefinitionMap.put("/**", "anon");
+        filterChainDefinitionMap.put("/*", "anon"); //表示/下的所有文件夹
+        filterChainDefinitionMap.put("/**", "anon"); //表示/下的所有文件夹里面的子文件夹
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
@@ -195,11 +192,10 @@ public class ShiroConfig {
     public SimpleCookie rememberMeCookie() {
         //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
         SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
-        //如果httyOnly设置为true，则客户端不会暴露给客户端脚本代码，使用HttpOnly cookie有助于减少某些类型的跨站点脚本攻击；
+        //如果httpOnly设置为true，则客户端不会暴露给客户端脚本代码，使用HttpOnly cookie有助于减少某些类型的跨站点脚本攻击；
         simpleCookie.setHttpOnly(true);
         //记住我cookie生效时间,单位是秒
         simpleCookie.setMaxAge(600);
-
         return simpleCookie;
     }
 

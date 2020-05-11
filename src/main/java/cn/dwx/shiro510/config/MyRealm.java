@@ -22,31 +22,20 @@ public class MyRealm extends AuthorizingRealm {
     @Override
 //    提供当前用户的权限信息
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        //角色set
-        Set<String> roleSet = new HashSet<>();
-        //权限set
-        Set<String> permissionSet = new HashSet<>();
-        //获得当前用户的角色和权限信息, 填充到以上的set中
-        Map userMap = (Map) principalCollection.getPrimaryPrincipal();
-        //获得用户id
-        int uid = (int) userMap.get("uid");
-        //根据uid 获得角色集合
-        List<Map> roles = userMapper.getRoleByUid(uid);
+        Set<String> roleSet = new HashSet<>(); //角色set
+        Set<String> permissionSet = new HashSet<>(); //权限set
+        Map userMap = (Map) principalCollection.getPrimaryPrincipal(); //获得当前用户的角色和权限信息, 填充到以上的set中
+        int uid = (int) userMap.get("uid"); //获得用户id
+        List<Map> roles = userMapper.getRoleByUid(uid); //根据uid 获得角色集合
         for (Map role : roles) {
-            //获得角色id
-            int rid = (int) role.get("id");
-            //获得角色名
-            String roleStr = (String) role.get("role");
-            //把角色名填充到roleSet
-            roleSet.add(roleStr);
-            //根据角色id查询权限集合
-            List<Map> permissions = userMapper.getPermissionByRid(rid);
+            int rid = (int) role.get("id"); //获得角色id
+            String roleStr = (String) role.get("role"); //获得角色名
+            roleSet.add(roleStr); //把角色名填充到roleSet
+            List<Map> permissions = userMapper.getPermissionByRid(rid); //根据角色id查询权限集合
             for (Map permission : permissions) {
-                //获得权限名称, 放入permissionSet中
-                permissionSet.add((String) permission.get("permission"));
+                permissionSet.add((String) permission.get("permission")); //获得权限名称, 放入permissionSet中
             }
         }
-
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.setRoles(roleSet);
         info.setStringPermissions(permissionSet);
@@ -60,16 +49,13 @@ public class MyRealm extends AuthorizingRealm {
         //把token参数 转成usernameandpasswordtoken类型
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
         String username = usernamePasswordToken.getUsername();  //获得username
-
         Map user = userMapper.getByName(username);
         if (user == null) {
             throw new UnknownAccountException(); //没有这个账户 抛一个异常
         }
-
         //获得盐值
         String salt = (String) user.get("salt");
         ByteSource bytes = ByteSource.Util.bytes(salt);
-
         //凭证信息    四个参数: 用户, 密码, 颜值, 当前realm的名称 MyRealm
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.get("password"), bytes, getName());
         return info;

@@ -10,21 +10,16 @@ public class MyPermFilter extends AuthorizationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
-        //获得当前用户
-        Subject subject = getSubject(request, response);
-        //把参数mappedValue转成数组
-        String[] perms = (String[]) mappedValue;
+        Subject subject = getSubject(request, response); //获得当前用户
+        String[] perms = (String[]) mappedValue; //把参数mappedValue转成数组
         if (perms == null || perms.length == 0) {
             return true;
         }
-
-        //循环判断当前用户是否有权限
-        for (String perm : perms) {
+        for (String perm : perms) {  //循环判断用户是否有权限, 当一有权限的时候, 就返回true, 相当于把and变成了or
             if (subject.isPermitted(perm)) {
                 return true;
             }
         }
-
         return false;
     }
 }
