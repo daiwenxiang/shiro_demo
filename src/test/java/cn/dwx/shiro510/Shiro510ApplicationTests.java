@@ -16,7 +16,7 @@ class Shiro510ApplicationTests {
     @Test
     void contextLoads() {
         SimpleHash simpleHash = new SimpleHash("md5", "111", "qq", 2);
-        System.out.println("simpleHash = " + simpleHash.toString());  //dc904b5613ac05a048a631fbde6ac3b0
+        System.out.println("simpleHash = " + simpleHash);  //dc904b5613ac05a048a631fbde6ac3b0
     }
 
     @Test
@@ -25,6 +25,6 @@ class Shiro510ApplicationTests {
                 "111",
                 "qq",
                 credentialsMatcher.getHashIterations());
-        System.out.println("simpleHash = " + simpleHash.toString());
+        System.out.println("simpleHash = " + simpleHash);
     }
 }
